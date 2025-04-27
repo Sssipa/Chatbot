@@ -1,0 +1,176 @@
+<nav x-data="{ isMobileOpen: false, isDropdownOpen: false }"  class="bg-white sticky top-0 z-50">
+    <div class="mx-auto max-w-6xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+            <!-- Mobile menu button -->
+            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                <button type="button" @click="isMobileOpen = !isMobileOpen"
+                    class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
+                    aria-controls="mobile-menu" aria-expanded="false">
+                    <span class="sr-only">Open main menu</span>
+
+                    <svg :class="{'hidden': isMobileOpen, 'block': !isMobileOpen }" class="block size-6" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+
+                    <svg :class="{'block': isMobileOpen, 'hidden': !isMobileOpen }" class="hidden size-6" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Logo & Desktop Menu -->
+            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-between">
+                <div class="flex shrink-0 items-center">
+                    <h1 class="h-8 w-auto text-gray-900 text-2xl font-bold">TinyBoss</h1>
+                    <img class="h-8 w-auto" src="/images/logo.png" alt="baby">
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden sm:ml-6 sm:block">
+                    <div class="flex space-x-4">
+                        <a href="/"
+                            class="rounded-md px-3 py-2 text-sm font-medium
+                            {{ request.url() === '/' 
+                                ? 'bg-gray-900 text-white' 
+                                : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}"
+">
+                            Beranda
+                        </a>
+                        <a href="{{ route('chatbot') }}"
+                            class="rounded-md px-3 py-2 text-sm font-medium
+                            {{ request.url().startsWith('/chatbot') 
+                                ? 'bg-gray-900 text-white' 
+                                : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
+                            Chatbot
+                        </a>
+
+                        <!-- Edukasi Dropdown -->
+                        <div class="relative inline-block text-left" @click.away="isDropdownOpen = false">
+                            <button type="button" @click="isDropdownOpen = !isDropdownOpen"
+                                class="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium
+                                {{ request.url().startsWith('/edukasi') 
+                                    ? 'bg-gray-900 text-white' 
+                                    : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}"
+                                aria-expanded="false" aria-haspopup="true">
+                                Edukasi
+                                <svg class="-mr-1 ml-1 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.01l3.71-3.78a.75.75 0 111.08 1.04l-4.25 4.32a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                
+                            <!-- Dropdown menu -->
+                            <div x-show="isDropdownOpen" x-cloak
+                                x-transition:enter="transition ease-out duration-100 transform"
+                                x-transition:enter-start="opacity-0 scale-95"
+                                x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75 transform"
+                                x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-95"
+                                class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
+                                <div class="py-1">
+                                    <a href="{{ route('edukasi.mitos') }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mitos vs Fakta</a>
+                                    <a href="{{ route('edukasi.artikel') }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Artikel</a>
+                                </div>
+                                <div class="py-1">
+                                    <a href="{{ route('edukasi.forum') }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Forum</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="{{ route('tentang') }}"
+                        class="rounded-md px-3 py-2 text-sm font-medium
+                        {{ request.url().startsWith('/tentang') 
+                        ? 'bg-gray-900 text-white' 
+                        : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
+                        Tentang
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:block">
+                    <!-- Search Bar (Desktop) -->
+                    <form action="/search" method="GET" class="ml-4 flex items-center space-x-2">
+                        <input type="text" name="q" placeholder="Cari..." 
+                            class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 placeholder-gray-400 focus:border-black focus:ring-black focus:outline-none" />
+                        <button type="submit" 
+                            class="rounded-md bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500 focus:outline-none">
+                            Cari
+                        </button>
+                    </form>
+                </div>
+            </div> 
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div x-show="isMobileOpen" x-transition class="sm:hidden" id="mobile-menu">
+        <div class="space-y-1 px-2 pt-2 pb-3">
+            <a href="/"
+                class="block rounded-md px-3 py-2 text-base font-medium
+                {{ request.url() === '/' 
+                    ? 'bg-gray-900 text-white' 
+                    : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}"
+">
+                Beranda
+            </a>
+            <a href="{{ route('chatbot') }}"
+                class="block rounded-md px-3 py-2 text-base font-medium
+                {{ request.url().startsWith('/chatbot') 
+                    ? 'bg-gray-900 text-white' 
+                    : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
+                Chatbot
+            </a>
+            <!-- Mobile Edukasi Dropdown -->
+            <div x-data="{ isOpenMobileDropdown: false }">
+                <button @click="isOpenMobileDropdown = !isOpenMobileDropdown"
+                    class="flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium  {{ request.url().startsWith('/edukasi') 
+                        ? 'bg-gray-900 text-white' 
+                        : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}"
+                    aria-expanded="false" aria-haspopup="true">
+                    Edukasi
+                    <svg class="ml-2 size-5 transform transition-transform duration-200"
+                        :class="{ 'rotate-180': isOpenMobileDropdown }" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <!-- Dropdown items -->
+                <div x-show="isOpenMobileDropdown" x-cloak x-transition class="space-y-1 pl-4">
+                    <a href="{{ route('edukasi.mitos') }}"
+                        class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-black">Mitos vs Fakta</a>
+                    <a href="{{ route('edukasi.artikel') }}"
+                        class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-black">Artikel</a>
+                    <a href="{{ route('edukasi.forum') }}"
+                        class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-black">Forum</a>
+                </div>
+            </div>
+            <a href="{{ route('tentang') }}"
+            class="block rounded-md px-3 py-2 text-base font-medium
+            {{ request.url().startsWith('/tentang') 
+            ? 'bg-gray-900 text-white' 
+            : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
+            Tentang
+            </a>
+
+            <!-- Search Bar (Mobile) -->
+            <form action="/search" method="GET" class="px-2 pt-2 pb-3">
+                <input type="text" name="q" placeholder="Cari..." 
+                    class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 focus:border-black focus:ring-black focus:outline-none" />
+                <button type="submit" 
+                    class="mt-2 w-full rounded-md bg-gray-600 px-3 py-2 text-base text-white hover:bg-gray-500 focus:outline-none">
+                    Cari
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>

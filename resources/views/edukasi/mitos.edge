@@ -1,0 +1,141 @@
+@component('layouts/app', { title: "Mitos vs Fakta Parenting" })
+@slot('meta')
+    <meta name="description" content="Bedakan mitos dan fakta seputar parenting dengan mudah melalui penjelasan yang akurat.">
+@endslot
+
+@slot('main')
+<section x-data="mitosFakta()" class="py-16 bg-white">
+  <div class="max-w-5xl mx-auto px-6">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Mitos vs Fakta Seputar Parenting</h2>
+
+    <div class="mb-6">
+      <input
+        type="text"
+        placeholder="Cari mitos..."
+        class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-indigo-200"
+        x-model="search"
+      >
+    </div>
+
+    <!-- Loop untuk setiap kategori -->
+    <template x-for="(kategori, index) in filteredKategori()" :key="index">
+      <div class="mb-8">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-4" x-text="kategori.nama"></h3>
+
+        <div class="space-y-4">
+          <!-- Loop untuk setiap item di kategori -->
+          <template x-for="(item, idx) in kategori.items.slice(0, kategori.limit)" :key="idx">
+            <div class="border rounded-xl shadow-sm overflow-hidden" x-data="{ open: false }">
+              <button
+                @click="open = !open"
+                class="w-full flex justify-between items-center p-4 bg-gray-100 hover:bg-gray-200"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="text-red-500">🚫</span>
+                  <span class="text-left font-semibold text-gray-700" x-text="item.mitos"></span>
+                </div>
+                <svg x-bind:class="{'rotate-180': open}" class="h-5 w-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+
+              <div x-show="open" x-collapse class="p-4 bg-white text-gray-600">
+                <div class="flex gap-2 items-start">
+                  <span class="text-green-500">✅</span>
+                  <p x-text="item.fakta"></p>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Tombol Lihat Lagi -->
+          <div x-show="kategori.items.length > kategori.limit" class="text-center mt-4">
+            <button
+              @click="kategori.limit += 3"
+              class="text-indigo-600 hover:underline font-medium"
+            >
+              Lihat Lagi
+            </button>
+          </div>
+        </div>
+
+        <!-- Pagination untuk kategori -->
+        <div class="mt-6 text-center">
+          <button
+            @click="kategori.page = Math.max(kategori.page - 1, 1)"
+            x-show="kategori.page > 1"
+            class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+          >
+            Previous
+          </button>
+          <span class="mx-2 text-sm" x-text="'Page ' + kategori.page"></span>
+          <button
+            @click="kategori.page += 1"
+            x-show="kategori.page < Math.ceil(kategori.items.length / kategori.limit)"
+            class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </template>
+
+  </div>
+</section>
+
+<script>
+function mitosFakta() {
+  return {
+    search: '',
+    kategori: [
+      {
+        nama: 'Mitos tentang ASI',
+        items: [
+          { mitos: 'ASI pertama itu kotor dan harus dibuang.', fakta: 'ASI pertama (kolostrum) kaya antibodi dan sangat penting untuk bayi baru lahir.' },
+          { mitos: 'ASI encer berarti kurang bergizi.', fakta: 'ASI encer tetap bergizi dan menghidrasi bayi dengan baik.' },
+          { mitos: 'ASI bikin bayi ketagihan.', fakta: 'Menyusui mempererat bonding, bukan ketagihan.' },
+          { mitos: 'Ibu menyusui harus makan dua kali lipat.', fakta: 'Yang penting kualitas gizi, bukan jumlah porsi.' },
+          { mitos: 'Bayi harus disapih dini.', fakta: 'WHO menyarankan menyusui hingga 2 tahun atau lebih.' },
+        ],
+        limit: 3, // Limit awal per halaman
+        page: 1 // Halaman awal
+      },
+      {
+        nama: 'Mitos tentang Tumbuh Kembang',
+        items: [
+          { mitos: 'Bayi harus selalu memakai sarung tangan.', fakta: 'Tangan bayi perlu bebas untuk melatih perkembangan sensorik.' },
+          { mitos: 'Bayi gemuk berarti sehat.', fakta: 'Berat badan bayi harus sesuai kurva pertumbuhan, bukan semata-mata gemuk.' },
+          { mitos: 'Terlambat jalan tanda tidak normal.', fakta: 'Setiap anak punya milestone yang berbeda.' },
+        ],
+        limit: 3,
+        page: 1
+      },
+      {
+        nama: 'Mitos tentang MPASI',
+        items: [
+          { mitos: 'MPASI harus diawali dengan nasi.', fakta: 'MPASI bisa diawali dengan berbagai sumber karbohidrat lain seperti kentang atau ubi.' },
+          { mitos: 'Harus makan banyak biar cepat gemuk.', fakta: 'Fokus pada kualitas gizi, bukan kuantitas makan.' },
+        ],
+        limit: 3,
+        page: 1
+      }
+    ],
+
+    filteredKategori() {
+      if (this.search.trim() === '') {
+        return this.kategori
+      }
+      const keyword = this.search.toLowerCase()
+      return this.kategori.map(kat => {
+        const filteredItems = kat.items.filter(item =>
+          item.mitos.toLowerCase().includes(keyword) || item.fakta.toLowerCase().includes(keyword)
+        )
+        return { ...kat, items: filteredItems, limit: 3, page: 1 }
+      }).filter(kat => kat.items.length > 0)
+    }
+  }
+}
+</script>
+
+@endslot
+@endcomponent
