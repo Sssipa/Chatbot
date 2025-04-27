@@ -1,0 +1,39 @@
+@component('layouts/app', { title: "Halaman Utama Edukasi" })
+    @slot('meta')
+        <meta name="description">
+    @endslot
+    @slot('main')
+    <div class="container mx-auto px-4 py-20">
+        <h1 class="text-3xl font-bold mb-6">Jelajah Edukasi</h1>
+        <p class="mb-8 text-gray-600">Temukan berbagai sumber informasi untuk mendukung perjalanan Anda sebagai orang tua modern.</p>
+    
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Mitos vs Fakta -->
+            <div class="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition">
+                <h2 class="text-2xl font-semibold mb-2">Mitos vs Fakta</h2>
+                <p class="text-gray-600 mb-4">Ketahui kebenaran di balik berbagai mitos tentang anak dan parenting.</p>
+                <a href="/edukasi/mitos-vs-fakta" class="inline-block px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+                Lihat Mitos →
+                </a>
+            </div>
+            <!-- Artikel -->
+            <div class="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition">
+                <h2 class="text-2xl font-semibold mb-2">Artikel</h2>
+                <p class="text-gray-600 mb-4">Baca artikel parenting yang bermanfaat dan inspiratif.</p>
+                <a href="/edukasi/artikel" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Buka Artikel →
+                </a>
+            </div>
+        
+            <!-- Forum Diskusi -->
+            <div class="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition">
+                <h2 class="text-2xl font-semibold mb-2">Forum Diskusi</h2>
+                <p class="text-gray-600 mb-4">Diskusikan pengalaman dan tips parenting dengan komunitas.</p>
+                <a href="/edukasi/forum" class="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Masuk Forum →
+                </a>
+            </div>
+        </div>
+    </div>
+    @endslot
+@endcomponent

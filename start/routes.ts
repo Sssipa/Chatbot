@@ -14,6 +14,10 @@ router.get('/chatbot', async ({ view }: { view: any }) => {
     return view.render('chatbot')
 }).as('chatbot')
 
+router.get('/edukasi', async ({ view }: { view: any }) => {
+    return view.render('edukasi/index')
+}).as('edukasi.index')
+
 router.get('/edukasi/mitos-vs-fakta', async ({ view }: { view: any }) => {
     return view.render('edukasi/mitos')
 }).as('edukasi.mitos')
