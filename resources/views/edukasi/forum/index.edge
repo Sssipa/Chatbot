@@ -1,0 +1,160 @@
+@component('layouts/app', { title: "Forum Parenting" })
+@slot('meta')
+<meta name="description" content="Diskusikan pengalaman dan tips parenting dengan komunitas.">
+@endslot
+
+@slot('main')
+<section class="py-12 bg-white" x-data="forumDiskusi()">
+<div class="max-w-7xl mx-auto px-6">
+
+    <!-- Beranda Forum -->
+    <div class="mb-10 text-center">
+    <h1 class="text-3xl font-bold text-gray-800">Forum Diskusi Parenting</h1>
+    <p class="mt-2 text-gray-600">Berbagi dan belajar dari sesama orang tua.</p>
+    </div>
+
+    <div class="flex justify-between items-center mb-6">
+    <a href="#" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-full text-sm font-semibold transition">
+        + Buat Diskusi Baru
+    </a>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-6">
+    <input type="text" x-model="search" placeholder="Cari diskusi..." class="w-full p-3 border rounded-xl" />
+    </div>
+
+    <!-- List Thread Diskusi -->
+    <div class="space-y-6">
+    <template x-for="thread in paginatedThreads()" :key="thread.id">
+        <a :href="thread.link" class="block p-4 bg-white rounded-lg shadow hover:shadow-lg transition">
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-lg font-semibold text-gray-800" x-text="thread.title"></h2>
+        </div>
+        <p class="text-gray-600 text-sm" x-text="thread.content"></p>
+        <div class="mt-4 text-xs text-gray-400 flex items-center gap-4">
+            <div class="flex items-center gap-2">
+            <span>👤</span> <span x-text="thread.author"></span>
+            </div>
+            <div>🗓️ <span x-text="thread.date"></span></div>
+            <div>💬 <span x-text="thread.comments"></span> Komentar</div>
+        </div>
+        </a>
+    </template>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-4 mt-8">
+    <button @click="prevPage" :disabled="currentPage === 1"
+        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50">
+        &laquo; Sebelumnya
+    </button>
+
+    <div class="text-sm text-gray-700">
+        Halaman <span x-text="currentPage"></span> dari <span x-text="totalPages"></span>
+    </div>
+
+    <button @click="nextPage" :disabled="currentPage === totalPages"
+        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50">
+        Selanjutnya &raquo;
+    </button>
+    </div>
+
+</div>
+</section>
+
+<!-- SCRIPT Alpine -->
+<script>
+function forumDiskusi() {
+    return {
+    search: '',
+    currentPage: 1,
+    perPage: 5,
+    semuaThread: [
+        {
+        id: 1,
+        title: '[Tanya] Bayi 3 Bulan Sering Rewel, Normal?',
+        content: 'Halo moms & dads, anak saya umur 3 bulan sering banget rewel padahal sudah kenyang dan digendong...',
+        author: 'Siti Hajar',
+        date: '25 April 2025',
+        comments: 2, link: '#'
+        },
+        {
+        id: 2,
+        title: '[Sharing] Pengalaman MPASI Pertama Anak',
+        content: 'Mau sharing pengalaman waktu anak mulai MPASI, semangat buat semua orang tua baru!',
+        author: 'Syahril Abadi',
+        date: '24 April 2025',
+        comments: 5, link: '#'
+        },
+        {
+        id: 3,
+        title: '[Tanya] Susah Tidur Malam, Apa Normal?',
+        content: 'Anak saya umur 8 bulan sering kebangun tengah malam, normal atau ada masalah ya?',
+        author: 'Aisyah Putri',
+        date: '23 April 2025',
+        comments: 3, link: '#'
+        },
+        {
+        id: 4,
+        title: '[Sharing] Tips Memperbanyak ASI',
+        content: 'Mau berbagi tips meningkatkan produksi ASI, semoga bermanfaat!',
+        author: 'Rahmat Saleh',
+        date: '22 April 2025',
+        comments: 4, link: '#'
+        },
+        {
+        id: 5,
+        title: '[Tanya] Anak GTM, Apa yang Harus Dilakukan?',
+        content: 'Bayi saya 1 tahun lagi susah makan (GTM), ada tips menghadapi ini?',
+        author: 'Dewi Lestari',
+        date: '21 April 2025',
+        comments: 6, link: '#'
+        },
+        {
+        id: 6,
+        title: '[Sharing] Liburan Pertama dengan Bayi',
+        content: 'Pengen sharing pengalaman bawa bayi pertama kali traveling.',
+        author: 'Fauzan Hakim',
+        date: '20 April 2025',
+        comments: 1, link: '#'
+        },
+    ],
+
+    get filteredThreads() {
+        if (this.search.trim() === '') {
+        return this.semuaThread
+        }
+        const keyword = this.search.toLowerCase()
+        return this.semuaThread.filter(thread =>
+        thread.title.toLowerCase().includes(keyword) || 
+        thread.content.toLowerCase().includes(keyword) || 
+        thread.author.toLowerCase().includes(keyword)
+        )
+    },
+
+    get totalPages() {
+        return Math.ceil(this.filteredThreads.length / this.perPage)
+    },
+
+    paginatedThreads() {
+        const start = (this.currentPage - 1) * this.perPage
+        return this.filteredThreads.slice(start, start + this.perPage)
+    },
+
+    nextPage() {
+        if (this.currentPage < this.totalPages) {
+        this.currentPage++
+        }
+    },
+
+    prevPage() {
+        if (this.currentPage > 1) {
+        this.currentPage--
+        }
+    }
+    }
+}
+</script>
+@endslot
+@endcomponent

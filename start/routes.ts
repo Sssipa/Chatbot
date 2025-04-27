@@ -27,7 +27,7 @@ router.get('/edukasi/artikel', async ({ view }: { view: any }) => {
 }).as('edukasi.artikel')
 
 router.get('/edukasi/forum', async ({ view }: { view: any }) => {
-    return view.render('edukasi/forum')
+    return view.render('edukasi/forum/index')
 }).as('edukasi.forum')
 
 router.get('/tentang', async ({ view }: { view: any }) => {
