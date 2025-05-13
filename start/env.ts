@@ -18,6 +18,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   HOST: Env.schema.string({ format: 'host' }),
   LOG_LEVEL: Env.schema.string(),
 
+  // n8n webhook URL
+  N8N_WEBHOOK_URL: Env.schema.string(),
+
   /*
   |----------------------------------------------------------
   | Variables for configuring session package

@@ -14,6 +14,9 @@ router.get('/chatbot', async ({ view }: { view: any }) => {
     return view.render('chatbot')
 }).as('chatbot')
 
+// route API untuk chatbot
+router.post("/api/chatbot/message", "#controllers/chatbots_controller.handleMessage")
+
 router.get('/edukasi', async ({ view }: { view: any }) => {
     return view.render('edukasi/index')
 }).as('edukasi.index')
@@ -33,3 +36,6 @@ router.get('/edukasi/forum', async ({ view }: { view: any }) => {
 router.get('/tentang', async ({ view }: { view: any }) => {
     return view.render('tentang')
 }).as('tentang')
+
+// Tambahkan route ini di file routes.ts yang sudah ada
+router.get("/api/test-n8n", "#controllers/test_n8n_controller.testConnection")
