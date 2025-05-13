@@ -33,3 +33,6 @@ router.get('/edukasi/forum', async ({ view }: { view: any }) => {
 router.get('/tentang', async ({ view }: { view: any }) => {
     return view.render('tentang')
 }).as('tentang')
+
+// controller chatbot api
+router.post('/api/chatbot/message', 'ChatbotController.sendMessage')
