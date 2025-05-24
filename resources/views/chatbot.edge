@@ -36,6 +36,7 @@
         </div>
         <div class="border-t-2 border-gray-200 px-4 pt-4">
             <div class="relative flex">
+                {{-- ini input bagaimana cara kerjanya broo? --}}
                 <input type="text" placeholder="Tanyakan seputar parenting..." autocomplete="off" autofocus="true"
                     @keydown.enter="sendMessage($event.target)"
                     class="text-md w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-5 pr-16 bg-gray-100 border-2 border-gray-200 focus:border-blue-500 rounded-full py-2"
@@ -73,13 +74,18 @@
 
             // Fungsi untuk mengirim pesan ke API
             sendMessage: async function (target) {
-                const message = target.value.trim();
-                if (!message) return;
+                const chatInput = target.value.trim();
+
+                // Perbaikan: Penanganan sessionId di localStorage
+                const sessionId = localStorage.getItem("chat_session") || crypto.randomUUID();
+                localStorage.setItem("chat_session", sessionId);
+
+                if (!chatInput) return;
 
                 // Tambahkan pesan pengguna ke daftar pesan
                 this.messages.push({
                     from: 'user',
-                    text: message
+                    text: chatInput
                 });
 
                 // Kosongkan input
@@ -95,14 +101,17 @@
                 }, 500);
 
                 try {
-                    // Panggil API endpoint
+                    // Panggil API endpoint session id
                     const response = await fetch('/api/chatbot/message', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify({ message }),
+                        body: JSON.stringify({
+                            chatInput: chatInput,
+                            sessionId: sessionId
+                        }),
                     });
 
                     // Periksa status respons

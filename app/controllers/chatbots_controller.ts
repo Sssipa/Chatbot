@@ -7,11 +7,11 @@ export default class ChatbotController {
    */
   async handleMessage({ request, response }: HttpContext) {
     try {
-      const { message } = request.body();
+      const { chatInput, sessionId } = request.body(); // 1
       const n8nWebhookUrl = env.get("N8N_WEBHOOK_URL");
 
       console.log("Webhook URL:", n8nWebhookUrl); // Log URL
-      if (!message) {
+      if (!chatInput) { // 2
         return response.status(400).json({
           success: false,
           message: "Pesan tidak boleh kosong",
@@ -24,7 +24,8 @@ export default class ChatbotController {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message,
+          chatInput, // 3
+          sessionId,
           userId: request.input("userId", "anonymous"),
           context: "parenting",
         }),
@@ -45,11 +46,13 @@ export default class ChatbotController {
         });
       }
 
-      await this.saveChatHistory(message, data.response || "Tidak ada respons");
+      const botResponse = data.response || data.output || "Maaf, saya tidak dapat memproses permintaan Anda saat ini.";
+
+      await this.saveChatHistory(chatInput, botResponse);
 
       return response.status(200).json({
         success: true,
-        response: data.response || "Maaf, saya tidak dapat memproses permintaan Anda saat ini.",
+        response: botResponse,
       });
     } catch (error) {
       console.error("Error processing chatbot message:", error);
@@ -70,7 +73,7 @@ export default class ChatbotController {
       await ChatHistory.create({
         user_message: userMessage,
         bot_response: botResponse,
-        user_id: 'anonymous' // Ganti dengan ID pengguna jika ada sistem autentikasi
+        user_id: 'anonymous', // Ganti dengan ID pengguna jika ada sistem autentikasi
       })
 
     } catch (error) {
