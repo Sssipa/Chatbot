@@ -11,7 +11,7 @@ export default class extends BaseSchema {
       table.text("bot_response").notNullable()
 
       table.timestamp("created_at")
-      table.timestamp("updated_at").nullable();
+      table.timestamp("updated_at")
     })
   }
 
