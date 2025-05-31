@@ -1,60 +1,74 @@
-<aside class="w-80 bg-white h-210 flex flex-col justify-between">
+<aside class="w-80 bg-white h-full flex flex-col justify-between shadow-lg"> {{-- Ubah h-210 menjadi h-full agar sidebar
+    mengisi tinggi layar --}}
     <div class="p-6">
         <h1 class="text-xl font-bold mb-4">Chatbot Dashboard</h1>
         <nav class="space-y-2">
-            <a href="/" class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded">
+            <a href="{{ route('chatbot') }}" class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded"> {{--
+                Link "Beranda" untuk Chatbot Dashboard --}}
                 <span class="mr-3">
-                    <!-- Home Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9.5L12 3l9 6.5v9.5a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4H9v4a2 2 0 01-2 2H3a2 2 0 01-2-2V9.5z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 9.5L12 3l9 6.5v9.5a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4H9v4a2 2 0 01-2 2H3a2 2 0 01-2-2V9.5z" />
                     </svg>
                 </span>
                 <span>Beranda</span>
             </a>
             <hr class="my-2 border-gray-300">
-            <!-- New Chat with Plus Icon -->
-            <a href="#" class="flex items-center p-2 text-gray-700 bg-gray-100 rounded">
+            {{-- Mengarahkan "New Chat" ke route 'chatbot' tanpa historyId akan mereset tampilan chat --}}
+            <a href="{{ route('chatbot') }}" class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded">
                 <span class="mr-3">
-                    <!-- Plus Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a3 3 0 013-3h12a3 3 0 013 3v10a3 3 0 01-3 3H9l-6 3V5z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5a3 3 0 013-3h12a3 3 0 013 3v10a3 3 0 01-3 3H9l-6 3V5z" />
                     </svg>
                 </span>
                 <span>New Chat</span>
             </a>
-            <!-- Histori Chat with Dropdown -->
-            <div class="relative">
-                <button class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded w-full">
+            {{-- Menggunakan Alpine.js untuk mengelola state dropdown (openHistory) --}}
+            <div x-data="{ openHistory: true }" class="relative">
+                <button @click="openHistory = !openHistory"
+                    class="flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded w-full">
                     <span class="mr-3">
-                        <!-- History Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v9l4-4m-4 4l-4-4m8 8a9 9 0 11-9-9h3a6 6 0 106 6h-3z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v9l4-4m-4 4l-4-4m8 8a9 9 0 11-9-9h3a6 6 0 106 6h-3z" />
                         </svg>
                     </span>
                     <span>Histori Chat</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    {{-- Icon panah yang berputar sesuai state dropdown --}}
+                    <svg :class="{'rotate-180': openHistory, 'rotate-0': !openHistory}"
+                        class="h-5 w-5 ml-auto transform transition-transform duration-200" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <!-- Dropdown Menu for History -->
-                <div class="absolute left-0 mt-2 w-full bg-white shadow-lg rounded-lg hidden">
+                {{-- x-show untuk menampilkan/menyembunyikan berdasarkan openHistory state --}}
+                {{-- x-cloak untuk menyembunyikan elemen sebelum Alpine.js diinisialisasi --}}
+                <div x-show="openHistory" x-cloak class="mt-1 space-y-1 pl-4">
                     <ul class="space-y-1">
-                        <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Chat 1</a></li>
-                        <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Chat 2</a></li>
-                        <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Chat 3</a></li>
+                        @if(chatHistories && chatHistories.length > 0)
+                        @each(chat in chatHistories)
+                        <li>
+                            <a href="{{ route('chatbot', { historyId: chat.id }) }}"
+                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded text-sm truncate">
+                                {{ chat.user_message.substring(0, 30) }}…
+                                <span class="text-xs text-gray-400">
+                                    ({{ chat.createdAt.toLocaleString(DateTime.DATE_SHORT) }})
+                                </span>
+                            </a>
+                        </li>
+                        @endeach
+                        @else
+                        <li>
+                            <p class="block px-4 py-2 text-gray-500 text-sm">Tidak ada histori.</p>
+                        </li>
+                        @endif
                     </ul>
                 </div>
             </div>
         </nav>
     </div>
 </aside>
-
-<script>
-    // Toggle dropdown for Histori Chat
-    const historyButton = document.querySelector('button');
-    const dropdownMenu = document.querySelector('div.absolute');
-
-    historyButton.addEventListener('click', () => {
-        dropdownMenu.classList.toggle('hidden');
-    });
-</script>

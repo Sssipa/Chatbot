@@ -1,14 +1,17 @@
-<div class="flex">
+{{-- resources/views/chatbot.edge --}}
+<div class="flex h-screen">
     {{-- Kalau di route chatbot, tampilkan side navbar --}}
-    @if(request.url().startsWith('/chatbot'))
+    {{-- Include sidebar component dan kirimkan chatHistories dan DateTime --}}
+    {{-- PERBAIKAN DI SINI: Gunakan Js.object() untuk passing variabel ke include --}}
+    {{-- request objek tidak perlu di-pass karena sudah tersedia di scope view utama --}}
     @include('components/sidebar')
-    @endif
 
-    {{-- Konten utama --}}
-    <div x-data="chatBot()" class="flex-1 p-2 sm:p-6 justify-between flex flex-col h-screen bg-white w-full sm:w-400">
+    {{-- Konten utama untuk menampilkan chat --}}
+    <div x-data="chatBot( {{ chatDaata }} )"
+        class="flex-1 p-2 sm:p-6 justify-between flex flex-col h-screen bg-white w-full sm:w-400">
         <div id="messages"
             class="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
-            <template x-for="(message, key) in messages">
+            <template x-for="(message, key) in messages" :key="key">
                 <div>
                     <div class="flex items-end" :class="message.from=='bot'?'':'justify-end'">
                         <div class="flex flex-col space-y-2 text-md leading-tight max-w-lg mx-2"
@@ -53,7 +56,6 @@
     </div>
 </div>
 
-
 <style>
     @import url('https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.min.css');
 </style>
@@ -64,19 +66,40 @@
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
 <script>
-    function chatBot() {
+    function chatBot(initialData) { // Menerima initialData dari Blade
         return {
             botTyping: false,
-            messages: [{
-                from: 'bot',
-                text: 'Halo! Saya adalah asisten parenting Anda. Apa yang ingin Anda tanyakan hari ini?'
-            }],
+            messages: [], // Awalnya kosong, akan diisi di init()
+
+            init() {
+                // Inisialisasi pesan berdasarkan historyId atau pesan default
+                if (initialData && initialData.selectedHistoryId) {
+                    const selectedChat = initialData.histories.find(chat => chat.id == initialData.selectedHistoryId);
+                    if (selectedChat) {
+                        this.messages = [
+                            { from: 'user', text: selectedChat.user_message },
+                            { from: 'bot', text: selectedChat.bot_response }
+                        ];
+                        // Jika Anda memiliki riwayat multi-turn yang lebih panjang, Anda perlu memuat lebih banyak data dari backend
+                        // Atau pastikan `selectedChat` berisi semua pesan dari sesi tersebut.
+                    } else {
+                        // Jika historyId tidak ditemukan, tampilkan pesan default
+                        this.messages = [{ from: 'bot', text: 'Halo! Saya adalah asisten parenting Anda. Apa yang ingin Anda tanyakan hari ini?' }];
+                    }
+                } else {
+                    // Tampilan default untuk chat baru
+                    this.messages = [{ from: 'bot', text: 'Halo! Saya adalah asisten parenting Anda. Apa yang ingin Anda tanyakan hari ini?' }];
+                }
+                this.scrollChat();
+            },
 
             // Fungsi untuk mengirim pesan ke API
             sendMessage: async function (target) {
                 const chatInput = target.value.trim();
 
                 // Perbaikan: Penanganan sessionId di localStorage
+                // Gunakan sessionId yang ada di localStorage atau generate baru
+                // Ini penting agar n8n bisa melacak sesi yang sama
                 const sessionId = localStorage.getItem("chat_session") || crypto.randomUUID();
                 localStorage.setItem("chat_session", sessionId);
 
@@ -101,7 +124,7 @@
                 }, 500);
 
                 try {
-                    // Panggil API endpoint session id
+                    // Panggil API endpoint
                     const response = await fetch('/api/chatbot/message', {
                         method: 'POST',
                         headers: {
@@ -152,6 +175,7 @@
                 const messagesContainer = document.getElementById("messages");
                 if (messagesContainer) {
                     messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+                    // Sedikit delay tambahan untuk memastikan rendering selesai
                     setTimeout(() => {
                         messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
                     }, 100);

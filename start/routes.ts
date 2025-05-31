@@ -11,6 +11,7 @@
 import router from "@adonisjs/core/services/router"
 import { middleware } from "#start/kernel" // Pastikan ini sudah ada
 import { DateTime } from "luxon"
+import ChatHistory from "#models/chat_history"
 
 // Routes untuk autentikasi
 router
@@ -69,8 +70,20 @@ router
             .as("home")
 
         router
-            .get("/chatbot", async ({ view }) => {
-                return view.render("chatbot")
+            .get("/chatbot", async ({ view, auth, request }) => {
+                // Ambil semua riwayat chat untuk sidebar
+                // Jika ada user yang login, Anda bisa filter berdasarkan user_id mereka
+                // Untuk contoh ini, kita ambil semua atau filter 'anonymous'
+                const chatHistories = await ChatHistory.query()
+                    .orderBy('createdAt', 'desc') // Urutkan dari yang terbaru
+                    // .where('user_id', auth.user?.id || 'anonymous') // Contoh filter jika ada user ID
+                    .limit(10); // Batasi jumlah riwayat
+
+                return view.render("chatbot", {
+                    chatHistories: chatHistories,
+                    DateTime: DateTime, // Teruskan kelas DateTime
+                    request: request // Teruskan objek request jika diperlukan di view
+                })
             })
             .as("chatbot")
 
