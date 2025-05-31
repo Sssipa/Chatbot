@@ -1,174 +1,139 @@
 <nav x-data="{ isMobileOpen: false, isDropdownOpen: false }" class="bg-white sticky top-0 z-50">
     <div class="mx-auto max-w-6xl px-2 sm:px-6 lg:px-8">
-        <div class="relative flex h-16 items-center justify-between">
-            <!-- Mobile menu button -->
+        <div class="relative flex h-16 items-center">
+
+            <!-- 1. Mobile menu button (will remain at absolute left on small screens) -->
             <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 <button type="button" @click="isMobileOpen = !isMobileOpen"
-                    class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
+                    class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
                     aria-controls="mobile-menu" aria-expanded="false">
                     <span class="sr-only">Open main menu</span>
-
-                    <svg :class="{'hidden': isMobileOpen, 'block': !isMobileOpen }" class="block size-6" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    <!-- Icon Hamburger -->
+                    <svg :class="{ 'hidden': isMobileOpen, 'block': !isMobileOpen }" class="h-6 w-6" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
-
-                    <svg :class="{'block': isMobileOpen, 'hidden': !isMobileOpen }" class="hidden size-6" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <!-- Icon X -->
+                    <svg :class="{ 'block': isMobileOpen, 'hidden': !isMobileOpen }" class="hidden h-6 w-6" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <!-- Logo & Desktop Menu -->
-            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-between">
-                <div class="flex shrink-0 items-center">
-                    <h1 class="h-8 w-auto text-gray-900 text-2xl font-bold">TinyBoss</h1>
-                    <img class="h-8 w-auto" src="/images/logo.png" alt="baby">
-                </div>
+            <!-- 2. Logo di kiri (kiri “normal”, tidak absolute) -->
+            <div class="flex-shrink-0 flex items-center pl-4 sm:pl-0">
+                <h1 class="text-2xl font-bold text-gray-900">TinyBoss</h1>
+                <img class="h-8 w-auto ml-2" src="/images/logo.png" alt="Logo">
+            </div>
 
-                <!-- Desktop Menu -->
-                <div class="hidden sm:ml-6 sm:block">
-                    <div class="flex space-x-4">
-                        <a href="/" class="rounded-md px-3 py-2 text-sm font-medium
-                            {{ request.url() === '/' 
-                                ? 'bg-gray-900 text-white' 
-                                : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}" ">
-                            Beranda
-                        </a>
-                        <a href=" {{ route('chatbot') }}" class="rounded-md px-3 py-2 text-sm font-medium
-                            {{ request.url().startsWith('/chatbot') 
-                                ? 'bg-gray-900 text-white' 
-                                : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
-                            Chatbot
-                        </a>
+            <!-- 3. Menu (desktop) di tengah menggunakan absolute + transform center -->
+            <div class="hidden sm:flex absolute left-1/2 ml-14 transform -translate-x-1/2 space-x-4">
+                <a href="/" class="px-3 py-2 rounded-md text-sm font-medium
+            {{ request.url() === '/' 
+                ? 'bg-gray-900 text-white' 
+                : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
+                    Beranda
+                </a>
+                <a href="{{ route('chatbot') }}" class="px-3 py-2 rounded-md text-sm font-medium
+            {{ request.url().startsWith('/chatbot') 
+                ? 'bg-gray-900 text-white' 
+                : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
+                    Chatbot
+                </a>
 
-                        <!-- Edukasi Dropdown -->
-                        <div class="relative inline-block text-left" @click.away="isDropdownOpen = false">
-                            <button type="button" @click="isDropdownOpen = !isDropdownOpen" class="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium
-                                {{ request.url().startsWith('/edukasi') 
-                                    ? 'bg-gray-900 text-white' 
-                                    : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}" aria-expanded="false"
-                                aria-haspopup="true">
-                                Edukasi
-                                <svg class="-mr-1 ml-1 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-                                    aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.01l3.71-3.78a.75.75 0 111.08 1.04l-4.25 4.32a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-
-                            <!-- Dropdown menu -->
-                            <div x-show="isDropdownOpen" x-cloak
-                                x-transition:enter="transition ease-out duration-100 transform"
-                                x-transition:enter-start="opacity-0 scale-95"
-                                x-transition:enter-end="opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-75 transform"
-                                x-transition:leave-start="opacity-100 scale-100"
-                                x-transition:leave-end="opacity-0 scale-95"
-                                class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
-                                <div class="py-1">
-                                    <a href="{{ route('edukasi.mitos') }}"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mitos vs
-                                        Fakta</a>
-                                    <a href="{{ route('edukasi.artikel') }}"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Artikel</a>
-                                </div>
-                                <div class="py-1">
-                                    <a href="{{ route('edukasi.forum.index') }}"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Forum</a>
-                                </div>
-                            </div>
+                <!-- Edukasi Dropdown -->
+                <div class="relative inline-block text-left" @click.away="isDropdownOpen = false">
+                    <button type="button" @click="isDropdownOpen = !isDropdownOpen" class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium
+              {{ request.url().startsWith('/edukasi') 
+                  ? 'bg-gray-900 text-white' 
+                  : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}" aria-expanded="false" aria-haspopup="true">
+                        Edukasi
+                        <svg class="w-5 h-5 ml-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+                            aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.01l3.71-3.78a.75.75 0 111.08 1.04l-4.25 4.32a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div x-show="isDropdownOpen" x-cloak x-transition:enter="transition ease-out duration-100 transform"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75 transform"
+                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 z-10 mt-2 w-48 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5">
+                        <div class="py-1">
+                            <a href="{{ route('edukasi.mitos') }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mitos vs Fakta</a>
+                            <a href="{{ route('edukasi.artikel') }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Artikel</a>
                         </div>
-
-                        <a href="{{ route('tentang') }}" class="rounded-md px-3 py-2 text-sm font-medium
-                        {{ request.url().startsWith('/tentang') 
-                        ? 'bg-gray-900 text-white' 
-                        : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
-                            Tentang
-                        </a>
+                        <div class="py-1">
+                            <a href="{{ route('edukasi.forum.index') }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Forum</a>
+                        </div>
                     </div>
                 </div>
-                <div class="hidden sm:ml-6 sm:block">
-                    <!-- Search Bar (Desktop) -->
-                    <form action="/search" method="GET" class="ml-4 flex items-center space-x-2">
-                        <input type="text" name="q" placeholder="Cari..."
-                            class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 placeholder-gray-400 focus:border-black focus:ring-black focus:outline-none" />
-                        <button type="submit"
-                            class="rounded-md bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500 focus:outline-none">
-                            Cari
-                        </button>
-                    </form>
-                </div>
-                <!-- Authentication Section -->
-                <div class="hidden sm:ml-6 sm:block">
+
+                <a href="{{ route('tentang') }}" class="px-3 py-2 rounded-md text-sm font-medium
+            {{ request.url().startsWith('/tentang') 
+                ? 'bg-gray-900 text-white' 
+                : 'text-gray-900 hover:bg-gray-200 hover:text-black' }}">
+                    Tentang
+                </a>
+            </div>
+
+            <!-- 4. Search + Authentication (desktop) di kanan -->
+            <div class="absolute inset-y-0 right-0 flex items-center pr-4 sm:pr-0 space-x-4">
+                <!-- Search Bar (hanya tampak di sm ke atas) -->
+                <form action="/search" method="GET" class="hidden sm:flex items-center mr-14">
+                    <input type="text" name="q" placeholder="Cari..."
+                        class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 placeholder-gray-400 focus:border-black focus:ring-black focus:outline-none" />
+                    <button type="submit"
+                        class="ml-2 rounded-md bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500 focus:outline-none">
+                        Cari
+                    </button>
+                </form>
+
+                <!-- Authentication Section (hanya tampak di sm ke atas) -->
+                <div class="hidden sm:block">
                     @if(auth.user)
-                    <!-- Profile Dropdown for Authenticated Users -->
-                    <div class="relative group inline-block text-left" x-data="{ isProfileOpen: false }"
-                        @click.away="isProfileOpen = false">
-                        <button type="button" @click="isProfileOpen = !isProfileOpen"
-                            class="flex items-center rounded-full bg-gray-100 p-2 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            aria-expanded="false" aria-haspopup="true">
-                            <span class="sr-only">Open user menu</span>
-                            <!-- Profile Icon -->
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open"
+                            class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                            <img src="https://ui-avatars.com/api/?name={{ encodeURIComponent(auth.user.fullName || auth.user.email) }}&background=6366f1&color=fff&size=32"
+                                alt="Profile" class="w-8 h-8 rounded-full">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
 
-                        <div
-                            class="absolute right-0 mt-2 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                            Profile
-                        </div>
-
-                        <!-- Profile Dropdown Menu -->
-                        <div x-show="isProfileOpen" x-cloak
-                            x-transition:enter="transition ease-out duration-100 transform"
-                            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                            x-transition:leave="transition ease-in duration-75 transform"
-                            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                            class="absolute right-0 z-10 mt-2 w-48 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
-                            <div class="py-1">
-                                <div class="px-4 py-2 text-sm text-gray-500 border-b border-gray-100">
-                                    <p class="font-medium text-gray-900">{{ auth.user.fullName || 'User' }}</p>
-                                    <p class="text-xs text-gray-500">{{ auth.user.email }}</p>
-                                </div>
-                                <a href="{{ route('profile.show') }}"
-                                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div x-show="open" @click.away="open = false" x-cloak
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="{{ route('profile.show') }}"
+                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Profile
+                            </a>
+                            <form action="{{ route('auth.logout') }}" method="POST">
+                                <button type="submit"
+                                    class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                     </svg>
-                                    Profile
-                                </a>
-                            </div>
-                            <div class="py-1">
-                                <form action="{{ route('auth.logout') }}" method="POST" class="block"
-                                    @submit="isProfileOpen = false">
-                                    {{ csrfField() }}
-                                    <button type="submit"
-                                        class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                        </svg>
-                                        Sign Out
-                                    </button>
-                                </form>
-                            </div>
+                                    Logout
+                                </button>
+                            </form>
                         </div>
-                        
                     </div>
                     @else
-                    <!-- Login Button for Unauthenticated Users -->
-                    {{-- <a aria-label="login" href="{{ route('auth.login') }}"
-                        class="flex items-center focus:outline-none">
-                        <span class="sr-only">Login</span>
-                        <img src="/images/login-icon.png" alt="Login" aria-label="login" class="w-8" />
-                    </a> --}}
                     <div class="relative group">
                         <a aria-label="login" href="{{ route('auth.login') }}"
                             class="flex items-center focus:outline-none">
@@ -183,6 +148,7 @@
                     @endif
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -257,7 +223,6 @@
                         Profile
                     </a>
                     <form action="{{ route('auth.logout') }}" method="POST" class="block">
-                        {{ csrfField() }}
                         <button type="submit"
                             class="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-black">
                             Sign Out
