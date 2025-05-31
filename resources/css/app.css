@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@source "../views";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
 
 * {
   margin: 0;

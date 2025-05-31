@@ -106,7 +106,7 @@
                 <div class="hidden sm:ml-6 sm:block">
                     @if(auth.user)
                     <!-- Profile Dropdown for Authenticated Users -->
-                    <div class="relative inline-block text-left" x-data="{ isProfileOpen: false }"
+                    <div class="relative group inline-block text-left" x-data="{ isProfileOpen: false }"
                         @click.away="isProfileOpen = false">
                         <button type="button" @click="isProfileOpen = !isProfileOpen"
                             class="flex items-center rounded-full bg-gray-100 p-2 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -118,6 +118,11 @@
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </button>
+
+                        <div
+                            class="absolute right-0 mt-2 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                            Profile
+                        </div>
 
                         <!-- Profile Dropdown Menu -->
                         <div x-show="isProfileOpen" x-cloak
@@ -155,6 +160,7 @@
                                 </form>
                             </div>
                         </div>
+                        
                     </div>
                     @else
                     <!-- Login Button for Unauthenticated Users -->
@@ -167,7 +173,7 @@
                         <a aria-label="login" href="{{ route('auth.login') }}"
                             class="flex items-center focus:outline-none">
                             <span class="sr-only">Login</span>
-                            <img src="/images/login-icon.png" alt="Login" aria-label="login" class="w-8" />
+                            <img src="/images/login-icon.png" alt="Login" class="w-8" />
                         </a>
                         <div
                             class="absolute right-0 mt-2 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
