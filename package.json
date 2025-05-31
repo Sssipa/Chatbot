@@ -65,6 +65,7 @@
     "@vinejs/vine": "^3.0.0",
     "edge.js": "^6.2.1",
     "luxon": "^3.6.1",
+    "marked": "^15.0.12",
     "mysql2": "^3.14.0",
     "reflect-metadata": "^0.2.2"
   },

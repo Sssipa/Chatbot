@@ -2,6 +2,7 @@ import type { HttpContext } from "@adonisjs/core/http"
 import env from "#start/env"
 import ChatHistory from "#models/chat_history" // Pastikan ChatHistory diimpor
 import { DateTime } from 'luxon' // Impor DateTime jika digunakan di view untuk format waktu
+import { marked } from 'marked'; // install dulu: npm i marked
 
 export default class ChatbotController {
   /**
@@ -53,7 +54,8 @@ export default class ChatbotController {
         });
       }
 
-      const botResponse = data.response || data.output || "Maaf, saya tidak dapat memproses permintaan Anda saat ini.";
+      const botResponse = (data.response || data.output || "Maaf, saya tidak dapat memproses permintaan Anda saat ini.").replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\*(.*?)\*/g, "<i>$1</i>").replace(/\*/g, "").replace(/\n/g, "<br>");
+      const botResponseHTML = marked.parse(botResponse); // Menggunakan marked untuk mengonversi Markdown ke HTML
 
       // HANYA simpan riwayat chat jika pengguna sudah login.
       // Jika auth.user ada, berarti pengguna sudah terautentikasi.
@@ -66,7 +68,7 @@ export default class ChatbotController {
 
       return response.status(200).json({
         success: true,
-        response: botResponse,
+        response: botResponseHTML,
       });
     } catch (error) {
       console.error("Error processing chatbot message:", error);
@@ -124,7 +126,7 @@ export default class ChatbotController {
     // Mengirim data histori chat, DateTime, dan request ke view chatbot
     // Sekarang, 'request' objek juga di-pass secara eksplisit ke view
     // return view.render('chatbot', { chatHistories, DateTime, request });
-    
+
     return view.render('chatbot', {
       chatData: JSON.stringify(chatData),
       DateTime
