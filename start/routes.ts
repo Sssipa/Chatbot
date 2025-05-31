@@ -8,55 +8,127 @@
 |
 */
 
-import router from '@adonisjs/core/services/router'
-import { middleware } from './kernel.js'
+import router from "@adonisjs/core/services/router"
+import { middleware } from "#start/kernel" // Pastikan ini sudah ada
+import { DateTime } from "luxon"
 
 // Routes untuk autentikasi
-router.get('/login', async ({ view }) => {
-    return view.render('auth/login')
-}).as('auth.login')
-router.post('/login', '#controllers/auth_controller.login') //
+router
+    .get("/login", async ({ view }) => {
+        return view.render("auth/login")
+    })
+    .as("auth.login")
+router.post("/login", "#controllers/auth_controller.login")
 
-router.get('/register', async ({ view }) => {
-    return view.render('auth/register')
-}).as('auth.register')
-router.post('/register', '#controllers/auth_controller.register') //
+router
+    .get("/register", async ({ view }) => {
+        return view.render("auth/register")
+    })
+    .as("auth.register")
+router.post("/register", "#controllers/auth_controller.register")
 
-router.post('/logout', '#controllers/auth_controller.logout').as('auth.logout') //
+// Pastikan rute logout menggunakan POST dan dilindungi jika diperlukan,
+// atau biarkan terbuka agar siapa pun bisa logout. Untuk sekarang, biarkan POST.
+router.post("/logout", "#controllers/auth_controller.logout").as("auth.logout")
 
-// Rute yang sebelumnya sudah ada
-router.on('/').render('home')
-router.get('/chatbot', async ({ view }: { view: any }) => {
-    return view.render('chatbot')
-}).as('chatbot')
+// Public routes with optional authentication (untuk konsistensi navbar)
+router
+    .group(() => {
+        router
+            .get("/", async ({ view }) => {
+                // Get testimonials data
+                const comments = [
+                    {
+                        message: "Layanan yang luar biasa! Sangat membantu saya dalam perjalanan sebagai orang tua.",
+                        avatar: "https://i.pravatar.cc/100?img=1",
+                        name: "Diana Putri",
+                        role: "Ibu Rumah Tangga",
+                    },
+                    {
+                        message: "Forum ini sangat informatif. Saya mendapatkan banyak wawasan baru tentang parenting.",
+                        avatar: "https://i.pravatar.cc/100?img=2",
+                        name: "Randy Saputra",
+                        role: "Ayah Muda",
+                    },
+                    {
+                        message: "Mudah sekali berinteraksi dengan sesama orang tua, dan banyak tips yang sangat bermanfaat.",
+                        avatar: "https://i.pravatar.cc/100?img=3",
+                        name: "Hani Fadilah",
+                        role: "Ibu Kerja",
+                    },
+                    {
+                        message: "Saya merasa lebih percaya diri sebagai orang tua setelah mengikuti diskusi di forum ini.",
+                        avatar: "https://i.pravatar.cc/100?img=4",
+                        name: "Budi Santoso",
+                        role: "Ayah dan Profesional",
+                    },
+                ]
+
+                return view.render("home", { comments })
+            })
+            .as("home")
+
+        router
+            .get("/chatbot", async ({ view }) => {
+                return view.render("chatbot")
+            })
+            .as("chatbot")
+
+        router
+            .get("/edukasi", async ({ view }) => {
+                return view.render("edukasi/index")
+            })
+            .as("edukasi.index")
+
+        router
+            .get("/edukasi/mitos-vs-fakta", async ({ view }) => {
+                return view.render("edukasi/mitos")
+            })
+            .as("edukasi.mitos")
+
+        router
+            .get("/edukasi/artikel", async ({ view }) => {
+                return view.render("edukasi/artikel")
+            })
+            .as("edukasi.artikel")
+
+        router
+            .get("/tentang", async ({ view }) => {
+                return view.render("tentang")
+            })
+            .as("tentang")
+    })
+    .use(middleware.optionalAuth()) // Menggunakan optional auth untuk semua halaman publik
 
 // route API untuk chatbot
-router.post("/api/chatbot/message", "#controllers/chatbots_controller.handleMessage") //
-
-router.get('/edukasi', async ({ view }: { view: any }) => {
-    return view.render('edukasi/index')
-}).as('edukasi.index')
-
-router.get('/edukasi/mitos-vs-fakta', async ({ view }: { view: any }) => {
-    return view.render('edukasi/mitos')
-}).as('edukasi.mitos')
-
-router.get('/edukasi/artikel', async ({ view }: { view: any }) => {
-    return view.render('edukasi/artikel')
-}).as('edukasi.artikel')
+router.post("/api/chatbot/message", "#controllers/chatbots_controller.handleMessage")
 
 // Rute untuk forum yang memerlukan login
-router.group(() => {
-    router.get('/edukasi/forum', async ({ view }: { view: any }) => {
-        return view.render('edukasi/forum/index')
-    }).as('edukasi.forum') // Ubah nama rute untuk kejelasan
-    // Contoh rute untuk membalas komentar di forum yang memerlukan login
-    router.post('/edukasi/forum/:threadId/reply', async ({ response }) => {
-        // Logika untuk membalas komentar, pastikan user sudah login
-        return response.json({ message: 'Reply posted!' })
+router
+    .group(() => {
+        router
+            .get("/edukasi/forum", async ({ view }) => {
+                return view.render("edukasi/forum/index")
+            })
+            .as("edukasi.forum.index")
+        router.post("/edukasi/forum/:threadId/reply", async ({ response }) => {
+            // Logika untuk membalas komentar, pastikan user sudah login
+            return response.json({ message: "Reply posted!" })
+        })
     })
-}).use(middleware.auth()) // Terapkan middleware auth untuk group ini
+    .use(middleware.auth())
 
-router.get('/tentang', async ({ view }: { view: any }) => {
-    return view.render('tentang')
-}).as('tentang')
+// ===========================================
+// Rute untuk Halaman Profil (baru ditambahkan)
+// ===========================================
+router
+    .group(() => {
+        router
+            .get("/profile", async ({ view, auth }) => {
+                // Mengirimkan data user yang sedang login ke view
+                const user = auth.user
+                return view.render("profile/index", { user, DateTime })
+            })
+            .as("profile.show")
+    })
+    .use(middleware.auth()) // Hanya user yang sudah login yang bisa mengakses halaman profile

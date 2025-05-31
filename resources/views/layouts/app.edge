@@ -1,29 +1,76 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>{{ title || "Your default title" }}</title>
-        @if ($slots.meta)
-            {{{ await $slots.meta() }}}
-        @endif
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    </head>
-    <body class="flex flex-col min-h-screen">
-        <header class="sticky top-0 z-50 bg-gray-800">
-            @include('components/navbar')
-        </header>
-        
+<head>
+    <meta charset="utf-8">
+    <title>{{ title || "Your default title" }}</title>
+    @if ($slots.meta)
+    {{{ await $slots.meta() }}}
+    @endif
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        {{-- Main Content --}}
-        <main class="flex-grow">
-            {{{ await $slots.main() }}}
-        </main>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
 
-        {{-- Footer --}}
-        @include('components/footer')
-    </body>
+<body class="flex flex-col min-h-screen">
+    <header class="sticky top-0 z-50 bg-gray-800">
+        @include('components/navbar')
+    </header>
+
+    <!-- Flash Messages -->
+    @if(flashMessages.has('success'))
+    <div x-data="{ show: true }" x-show="show" x-transition
+        class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mx-4 mt-4" role="alert">
+        <strong class="font-bold">Sukses!</strong>
+        <span class="block sm:inline">{{ flashMessages.get('success') }}</span>
+        <span class="absolute top-0 bottom-0 right-0 px-4 py-3" @click="show = false">
+            <svg class="fill-current h-6 w-6 text-blue-500" role="button" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20">
+                <title>Close</title>
+                <path
+                    d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+            </svg>
+        </span>
+    </div>
+    @endif
+
+    @if(flashMessages.has('error'))
+    <div x-data="{ show: true }" x-show="show" x-transition
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-4 mt-4" role="alert">
+        <strong class="font-bold">Error!</strong>
+        <span class="block sm:inline">{{ flashMessages.get('error') }}</span>
+        <span class="absolute top-0 bottom-0 right-0 px-4 py-3" @click="show = false">
+            <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20">
+                <title>Close</title>
+                <path
+                    d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+            </svg>
+        </span>
+    </div>
+    @endif
+
+    {{-- Main Content --}}
+    <main class="flex-grow">
+        {{{ await $slots.main() }}}
+    </main>
+
+    {{-- Footer --}}
+    @include('components/footer')
+
+    <!-- Auto-hide flash messages after 5 seconds -->
+    <script>
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('[role="alert"]');
+            alerts.forEach(alert => {
+                if (alert.querySelector('[x-data]')) {
+                    alert.querySelector('[x-data]').__x.$data.show = false;
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+
 </html>
