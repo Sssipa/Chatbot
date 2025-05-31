@@ -158,11 +158,22 @@
                     </div>
                     @else
                     <!-- Login Button for Unauthenticated Users -->
-                    <a aria-label="login" href="{{ route('auth.login') }}"
+                    {{-- <a aria-label="login" href="{{ route('auth.login') }}"
                         class="flex items-center focus:outline-none">
                         <span class="sr-only">Login</span>
-                        <img src="/images/login-icon.png" alt="Login" class="w-8" />
-                    </a>
+                        <img src="/images/login-icon.png" alt="Login" aria-label="login" class="w-8" />
+                    </a> --}}
+                    <div class="relative group">
+                        <a aria-label="login" href="{{ route('auth.login') }}"
+                            class="flex items-center focus:outline-none">
+                            <span class="sr-only">Login</span>
+                            <img src="/images/login-icon.png" alt="Login" aria-label="login" class="w-8" />
+                        </a>
+                        <div
+                            class="absolute right-0 mt-2 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                            Login
+                        </div>
+                    </div>
                     @endif
                 </div>
             </div>
