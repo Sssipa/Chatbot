@@ -1,10 +1,17 @@
 import { defineConfig } from '@adonisjs/auth'
 import { tokensGuard, tokensUserProvider } from '@adonisjs/auth/access_tokens'
+import { sessionGuard, sessionUserProvider } from '@adonisjs/auth/session' // Import sessionGuard dan sessionUserProvider
 import type { InferAuthenticators, InferAuthEvents, Authenticators } from '@adonisjs/auth/types'
 
 const authConfig = defineConfig({
-  default: 'api',
+  default: 'web', // Ubah default menjadi 'web'
   guards: {
+    web: sessionGuard({
+      provider: sessionUserProvider({
+        model: () => import('#models/user'),
+      }),
+      useRememberMeTokens: false
+    }),
     api: tokensGuard({
       provider: tokensUserProvider({
         tokens: 'accessTokens',
@@ -17,7 +24,7 @@ const authConfig = defineConfig({
 export default authConfig
 
 /**
- * Inferring types from the configured auth
+ * Inferring types for the configured auth
  * guards.
  */
 declare module '@adonisjs/auth/types' {
