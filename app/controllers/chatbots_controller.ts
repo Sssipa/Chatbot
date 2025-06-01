@@ -58,10 +58,10 @@ export default class ChatbotController {
       const botResponseHTML = marked.parse(botResponse); // Menggunakan marked untuk mengonversi Markdown ke HTML
 
       // HANYA simpan riwayat chat jika pengguna sudah login.
-      // Jika auth.user ada, berarti pengguna sudah terautentikasi.
       if (auth.user) {
-        // Memanggil saveChatHistory dengan ID pengguna yang sebenarnya
+        console.log("Akan simpan chat untuk user_id:", auth.user.id, chatInput, botResponse);
         await this.saveChatHistory(auth.user.id.toString(), chatInput, botResponse);
+        console.log("Berhasil simpan chat (atau catch error jika gagal)");
       }
       // Jika pengguna belum login (auth.user null), saveChatHistory tidak akan dipanggil,
       // sehingga riwayat chat tidak disimpan ke database.
@@ -96,6 +96,8 @@ export default class ChatbotController {
         bot_response: botResponse,
       });
 
+      console.log("saveChatHistory:", { userId, userMessage, botResponse });
+
     } catch (error) {
       console.error("Error saving chat history:", error);
     }
@@ -104,31 +106,23 @@ export default class ChatbotController {
   /**
    * Metode baru untuk menampilkan Chatbot Dashboard beserta histori chat
    */
-  async showChatbotDashboard({ view, auth, request }: HttpContext) {
+  async showChatbotDashboard({ view, auth }: HttpContext) {
     // Perbaikan: Berikan tipe eksplisit untuk chatHistories
     let chatHistories: ChatHistory[] = []; // Memberi tahu TypeScript bahwa ini adalah array dari objek ChatHistory
 
+    console.log('auth.user:', auth.user);
+    
     if (auth.user) {
       // Ambil riwayat chat berdasarkan user_id hanya jika pengguna login
       chatHistories = await ChatHistory
         .query()
         .where('user_id', auth.user.id.toString())
         .orderBy('createdAt', 'desc') // Urutkan dari yang terbaru
-        .limit(10); // Batasi jumlah riwayat yang ditampilkan di sidebar, misalnya 10 percakapan terakhir
+        .limit(10);
     }
-
-    // Siapkan data JSON
-    const chatData = {
-      histories: chatHistories,
-      selectedHistoryId: request.input('historyId')
-    }
-
-    // Mengirim data histori chat, DateTime, dan request ke view chatbot
-    // Sekarang, 'request' objek juga di-pass secara eksplisit ke view
-    // return view.render('chatbot', { chatHistories, DateTime, request });
 
     return view.render('chatbot', {
-      chatData: JSON.stringify(chatData),
+      chatHistories,
       DateTime
     })
   }

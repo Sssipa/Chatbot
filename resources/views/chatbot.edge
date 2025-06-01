@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="csrf-token" content="{{ csrfToken }}">
+    
     <title>TinyBoss Chatbot - Parenting Assistant</title>
     <meta name="description" content="Chatbot parenting TinyBoss - Tanya jawab seputar pengasuhan anak">
 
@@ -393,6 +396,8 @@
                 },
 
                 async sendMessage(target) {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    
                     const chatInput = target.value.trim();
                     if (!chatInput) return;
 
@@ -419,12 +424,14 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Accept': 'application/json'
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
                             },
                             body: JSON.stringify({
                                 chatInput: chatInput,
                                 sessionId: sessionId
                             }),
+                            credentials: 'include',
                         });
 
                         if (!response.ok) {

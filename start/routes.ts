@@ -71,21 +71,25 @@ router
 
         router
             .get("/chatbot", async ({ view, auth, request }) => {
-                // Ambil semua riwayat chat untuk sidebar
-                // Jika ada user yang login, Anda bisa filter berdasarkan user_id mereka
-                // Untuk contoh ini, kita ambil semua atau filter 'anonymous'
-                const chatHistories = await ChatHistory.query()
-                    .orderBy('createdAt', 'desc') // Urutkan dari yang terbaru
-                    // .where('user_id', auth.user?.id || 'anonymous') // Contoh filter jika ada user ID
-                    .limit(10); // Batasi jumlah riwayat
-
+                let chatHistories = [];
+                if (auth.user) {
+                    chatHistories = await ChatHistory.query()
+                        .where('user_id', auth.user.id.toString())
+                        .orderBy('createdAt', 'desc')
+                        .limit(10);
+                } else {
+                    chatHistories = await ChatHistory.query()
+                        .where('user_id', 'anonymous')
+                        .orderBy('createdAt', 'desc')
+                        .limit(10);
+                }
                 return view.render("chatbot", {
-                    chatHistories: chatHistories,
-                    DateTime: DateTime, // Teruskan kelas DateTime
-                    request: request // Teruskan objek request jika diperlukan di view
-                })
+                    chatHistories,
+                    DateTime: DateTime,
+                    request: request
+                });
             })
-            .as("chatbot")
+            .as("chatbot");
 
         router
             .get("/edukasi", async ({ view }) => {
