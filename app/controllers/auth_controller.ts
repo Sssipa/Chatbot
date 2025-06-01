@@ -25,7 +25,7 @@ export default class AuthController {
       // Add success message
       session.flash("success", "Login berhasil! Selamat datang kembali.")
 
-      return response.redirect().toPath("/") // Redirect ke halaman utama setelah login
+      return response.redirect().toPath("/?auth_status=success") // Tambahkan parameter
     } catch (error) {
       // Handle login errors
       session.flash("errors", {
@@ -55,7 +55,7 @@ export default class AuthController {
       // Add success message
       session.flash("success", "Registrasi berhasil! Selamat datang di TinyBoss.")
 
-      return response.redirect().toPath("/") // Redirect ke halaman utama setelah register
+      return response.redirect().toPath("/?auth_status=success") // Tambahkan parameter
     } catch (error) {
       // Handle registration errors
       session.flash("errors", {
@@ -79,7 +79,7 @@ export default class AuthController {
       session.flash("success", "Anda telah berhasil logout. Sampai jumpa!")
 
       // Redirect to homepage instead of login page
-      return response.redirect().toPath("/") // Redirect ke halaman beranda setelah logout
+      return response.redirect().toPath("/?auth_status=logged_out") // Tambahkan parameter
     } catch (error) {
       // Handle logout errors
       session.flash("error", "Terjadi kesalahan saat logout.")

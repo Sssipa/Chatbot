@@ -9,9 +9,9 @@ export default class ChatbotController {
    * Handle chatbot message and forward to n8n
    */
   // Menambahkan 'auth' ke destructuring HttpContext agar bisa mengakses status login pengguna
-  async handleMessage({ request, response, auth }: HttpContext) {
+  async handleMessage({ request, response, auth, session  }: HttpContext) {
     try {
-      const { chatInput, sessionId } = request.body();
+      const { chatInput, clientSessionId: clientSessionId } = request.body();
       const n8nWebhookUrl = env.get("N8N_WEBHOOK_URL");
 
       console.log("Webhook URL:", n8nWebhookUrl); // Log URL
@@ -26,6 +26,20 @@ export default class ChatbotController {
       // Jika pengguna login, gunakan ID mereka. Jika tidak, gunakan 'anonymous'.
       const userIdForN8n = auth.user ? auth.user.id.toString() : 'anonymous';
 
+      let n8nSessionId = userIdForN8n;
+
+      if (userIdForN8n === 'anonymous') {
+          // Jika anonim, gunakan sessionId dari client (harus unik per browser session)
+          if (!clientSessionId) {
+              // Jika clientSessionId tidak ada (misalnya halaman baru), buat yang baru
+              // Ini harusnya diurus di frontend, tapi sebagai fallback
+              n8nSessionId = `anonymous-${crypto.randomUUID()}`; // Contoh: gunakan UUID
+              session.put('anonymous_session_id', n8nSessionId); // Simpan di session backend jika perlu
+          } else {
+              n8nSessionId = clientSessionId;
+          }
+      }
+
       const n8nResponse = await fetch(n8nWebhookUrl, {
         method: "POST",
         headers: {
@@ -33,7 +47,7 @@ export default class ChatbotController {
         },
         body: JSON.stringify({
           chatInput, // 3
-          sessionId,
+          sessionId: n8nSessionId, // Mengirim sessionId ke n8n
           userId: userIdForN8n, // Mengirim userId ke n8n
           context: "parenting",
         }),
@@ -119,6 +133,8 @@ export default class ChatbotController {
         .where('user_id', auth.user.id.toString())
         .orderBy('createdAt', 'desc') // Urutkan dari yang terbaru
         .limit(10);
+    } else {
+      chatHistories = []
     }
 
     return view.render('chatbot', {

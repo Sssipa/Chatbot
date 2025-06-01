@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <meta name="csrf-token" content="{{ csrfToken }}">
-    
+
     <title>TinyBoss Chatbot - Parenting Assistant</title>
     <meta name="description" content="Chatbot parenting TinyBoss - Tanya jawab seputar pengasuhan anak">
 
@@ -358,6 +358,7 @@
     </div>
 
     <script>
+
         function chatBot() {
             return {
                 botTyping: false,
@@ -366,6 +367,13 @@
                 init() {
                     // Check if there's a specific history to load
                     const urlParams = new URLSearchParams(window.location.search);
+
+                    if (urlParams.get('auth_status') === 'success') { // Contoh, Anda perlu menambahkan ini di redirect backend
+                        localStorage.removeItem('chatSessionId'); // Hapus sessionId lama
+                        console.log('chatSessionId cleared due to authentication status change.');
+                    }
+
+
                     const historyId = urlParams.get('historyId');
 
                     if (historyId) {
@@ -397,12 +405,12 @@
 
                 async sendMessage(target) {
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                    
+
                     const chatInput = target.value.trim();
                     if (!chatInput) return;
 
-                    const sessionId = localStorage.getItem("chat_session") || crypto.randomUUID();
-                    localStorage.setItem("chat_session", sessionId);
+                    const sessionId = localStorage.getItem("chatSessionId") || crypto.randomUUID();
+                    localStorage.setItem("chatSessionId", sessionId);
 
                     // Add user message
                     this.messages.push({
