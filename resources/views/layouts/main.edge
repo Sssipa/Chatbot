@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TinyBoss - Forum Parenting</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  {{-- Jika Anda menggunakan Vite/Mix untuk asset bundling: --}}
+  {{-- @entrypointStyles('app') --}}
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <header class="bg-white shadow-sm py-4">
+    <nav class="container mx-auto flex justify-between items-center px-4">
+      <div class="text-2xl font-bold text-gray-800">TinyBoss</div>
+      <ul class="flex space-x-6">
+        <li><a href="/" class="text-gray-600 hover:text-gray-800">Beranda</a></li>
+        <li><a href="#" class="text-gray-600 hover:text-gray-800">Chatbot</a></li>
+        <li><a href="{{ route('forum.index') }}" class="text-blue-600 font-semibold hover:text-blue-800">Edukasi</a></li>
+        <li><a href="#" class="text-gray-600 hover:text-gray-800">Tentang</a></li>
+      </ul>
+      <div class="flex items-center space-x-4">
+        <input type="text" placeholder="Cari..." class="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button class="bg-blue-500 text-white px-4 py-1 rounded-md">Cari</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="py-8">
+    @section('body')
+    @endsection
+  </main>
+
+  <footer class="bg-gray-800 text-white py-6 mt-8">
+    <div class="container mx-auto text-center">
+      <p>&copy; {{ new Date().getFullYear() }} TinyBoss. All rights reserved.</p>
+    </div>
+  </footer>
+
+  {{-- Jika Anda menggunakan Vite/Mix untuk asset bundling: --}}
+  {{-- @entrypointScripts('app') --}}
+</body>
+</html>

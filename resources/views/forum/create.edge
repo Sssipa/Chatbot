@@ -1,0 +1,46 @@
+@layout('layouts/main')
+
+@section('body')
+  <div class="container mx-auto p-4">
+    <nav class="mb-4 text-sm text-blue-600">
+      <a href="{{ route('forum.index') }}" class="hover:underline">&larr; Kembali ke Forum</a>
+    </nav>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-md mb-8">
+      <h1 class="text-3xl font-bold text-gray-800 mb-6">Bagikan Pengalaman Baru</h1>
+
+      @if(flashMessages.has('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <span class="block sm:inline">{{ flashMessages.get('error') }}</span>
+        </div>
+      @endif
+
+      <form action="{{ route('forum.store') }}" method="POST">
+        {{ csrfField() }}
+        <div class="mb-4">
+          <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Judul Pengalaman:</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Misal: Pengalaman MPASI Pertama Anak"
+          >
+        </div>
+        <div class="mb-6">
+          <label for="content" class="block text-gray-700 text-sm font-bold mb-2">Isi Pengalaman:</label>
+          <textarea
+            id="content"
+            name="content"
+            rows="8"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Ceritakan pengalaman Anda di sini..."
+          ></textarea>
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+          Kirim Pengalaman
+        </button>
+      </form>
+    </div>
+  </div>
+@endsection
