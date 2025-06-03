@@ -1,0 +1,146 @@
+@component('layouts/app', { title: "Artikel" })
+@slot('meta')
+    <meta name="description" content="Temukan artikel parenting terbaru dan inspiratif untuk mendukung perjalanan Anda sebagai orang tua.">
+@endslot
+
+@slot('main')  
+<section x-data="artikelPagination()" x-init="fetchData()" class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-24 sm:py-32">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="mx-auto max-w-2xl lg:mx-0">
+      <h2 class="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">Artikel Terbaru</h2>
+      <p class="mt-2 text-lg text-gray-600">Tips & Inspirasi Parenting Digital untuk Keluarga Modern</p>
+    </div>
+    <div class="flex items-center mb-6 mt-6">
+      <input 
+        type="text" 
+        placeholder="Cari Artikel..." 
+        x-model="searchQuery"
+        class="px-4 py-2 border border-gray-300 rounded-md w-full max-w-md"
+      >
+    </div>
+    
+    <!-- Grid Artikel -->
+    <template x-if="loading">
+      <div class="text-center text-gray-500 py-10">Memuat data...</div>
+    </template>
+    <template x-if="!loading && filteredArticles.length === 0">
+      <div class="text-center text-gray-500 py-10">Tidak ada artikel ditemukan.</div>
+    </template>
+    <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 pt-10 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3" x-show="!loading && filteredArticles.length > 0">
+      <template x-for="(artikel, index) in paginatedData()" :key="artikel.id">
+        <article class="flex flex-col items-start justify-between overflow-hidden rounded-2xl shadow hover:shadow-lg transition bg-white">
+          <img class="w-full h-48 object-cover" :src="artikel.gambar" alt="Gambar Artikel">
+          <div class="flex flex-1 flex-col p-6">
+            <div class="flex items-center gap-x-4 text-xs">
+              <time :datetime="artikel.createdAt" class="text-gray-500" x-text="formatTanggal(artikel.createdAt)"></time>
+            </div>
+            <h3 class="mt-3 text-lg font-semibold text-gray-900 group-hover:text-green-700">
+              <a :href="'/artikel/' + artikel.id">
+                <span x-text="artikel.judul"></span>
+              </a>
+            </h3>
+            <p class="mt-5 line-clamp-1 text-sm text-gray-600" x-text="artikel.penulis"></p>
+            <p class="mt-5 line-clamp-3 text-sm text-gray-600" x-text="artikel.isi.substring(0, 100) + '...'"></p>
+          </div>
+        </article>
+      </template>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-4 mt-10" x-show="!loading && filteredArticles.length > 0">
+      <button
+        @click="prevPage"
+        x-show="currentPage > 1"
+        class="px-4 py-2 bg-amber-400 text-gray-600 font-semibold rounded-lg hover:bg-amber-500 transition"
+      >
+        Previous
+      </button>
+      <span class="text-gray-600" x-text="'Halaman ' + currentPage"></span>
+      <button
+        @click="nextPage"
+        x-show="currentPage < totalPages"
+        class="px-4 py-2 bg-amber-400 text-gray-600 font-semibold rounded-lg hover:bg-amber-500 transition"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  function artikelPagination() {
+    return {
+      searchQuery: '',
+      currentPage: 1,
+      perPage: 6,
+      artikels: [],
+      loading: true,
+
+      async fetchData() {
+        this.loading = true
+        try {
+          const res = await fetch('/api/artikel')
+          const data = await res.json()
+          this.artikels = data.map(a => ({
+            ...a,
+            createdAt: a.createdAt || a.created_at
+          }))
+        } catch (e) {
+          this.artikels = []
+        }
+        this.loading = false
+      },
+
+      get filteredArticles() {
+        if (!this.searchQuery.trim()) return this.artikels
+        const keyword = this.searchQuery.toLowerCase()
+        return this.artikels.filter(artikel =>
+          artikel.judul.toLowerCase().includes(keyword) ||
+          artikel.penulis.toLowerCase().includes(keyword) ||
+          artikel.isi.toLowerCase().includes(keyword)
+        )
+      },
+
+      paginatedData() {
+        const start = (this.currentPage - 1) * this.perPage
+        return this.filteredArticles.slice(start, start + this.perPage)
+      },
+
+      get totalPages() {
+        return Math.ceil(this.filteredArticles.length / this.perPage) || 1
+      },
+
+      nextPage() {
+        if (this.currentPage < this.totalPages) {
+          this.currentPage++
+        }
+      },
+
+      prevPage() {
+        if (this.currentPage > 1) {
+          this.currentPage--
+        }
+      },
+
+      startItem() {
+        return this.filteredArticles.length === 0 ? 0 : (this.currentPage - 1) * this.perPage + 1
+      },
+
+      endItem() {
+        return Math.min(this.currentPage * this.perPage, this.filteredArticles.length)
+      },
+
+      formatTanggal(tanggal) {
+        if (!tanggal) return '-'
+        const date = new Date(tanggal)
+        if (isNaN(date)) return tanggal
+        const options = { year: 'numeric', month: 'long', day: 'numeric' }
+        return date.toLocaleDateString('id-ID', options)
+      }
+    }
+  }  
+</script>
+@endslot
+@endcomponent

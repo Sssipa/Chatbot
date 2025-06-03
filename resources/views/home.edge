@@ -4,9 +4,9 @@
   @endslot
 
   @slot('main')  
-  
+  <div class="bg-gradient-to-br from-indigo-50 via-white to-purple-50">
   <!-- Hero Section -->
-  <section class=" flex flex-col px-6 py-16 items-center bg-white">
+  <section class=" flex flex-col px-6 py-16 items-center">
     <!-- Dua kolom sejajar -->
     <div class="flex flex-col md:flex-row w-full max-w-6xl items-start justify-between gap-10">
       <!-- Kiri: Judul -->
@@ -26,8 +26,8 @@
           <a href="/chatbot" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded font-medium transition duration-300">
             Mulai Chatbot
           </a>
-          <a href="/edukasi" class="bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 px-6 py-3 rounded font-medium transition duration-300">
-            Jelajahi Edukasi →
+          <a href="/tentang" class="bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 px-6 py-3 rounded font-medium transition duration-300">
+            Tentang Kami →
           </a>
         </div>
       </div>
@@ -40,7 +40,7 @@
   </section>  
   
     <!-- Section: Fitur Utama -->
-    <section class="bg-white py-20">
+    <section class="py-20">
       <div class=" py-20 sm:py-32">
         <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
           <h2 class="text-center text-base/7 font-semibold text-indigo-600">TinyBoss Hadir untuk Anda</h2>
@@ -108,36 +108,37 @@
     </section>
 
     {{-- section: Testimoni --}}
-    <section class="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:px-8 border-t border-gray-200">
-      <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-100),white)] opacity-20"></div>
-      <div class="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl ring-1 shadow-indigo-600/10 ring-indigo-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
-      <div class="mx-auto max-w-2xl lg:max-w-4xl">
+    <section class="relative isolate overflow-hidden px-6 py-24 sm:py-32 lg:px-8">
+      <div class="mx-auto max-w-7xl px-6">
         <div class="text-center">
           <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">Apa Kata Mereka?</h2>
           <p class="mt-4 text-lg text-gray-600">Berikut adalah beberapa testimoni dari pengguna kami.</p>
-        @each(comment in comments)
-        <figure class="mt-10">
-          <blockquote class="text-center text-xl/8 font-semibold text-gray-900 sm:text-2xl/9">
-            <p>“{{ comment.message }}”</p>
-          </blockquote>
-          <figcaption class="mt-10">
-            <img class="mx-auto size-10 rounded-full" src="{{ comment.avatar }}" alt="">
-            <div class="mt-4 flex items-center justify-center space-x-3 text-base">
-              <div class="font-semibold text-gray-900">{{ comment.name }}</div>
-              <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" class="fill-gray-900">
-                <circle cx="1" cy="1" r="1" />
-              </svg>
-              <div class="text-gray-600">{{ comment.role }}</div>
-            </div>
-          </figcaption>
-        </figure>
-        @endeach        
+        </div>
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+          @each(comment in comments)
+          <figure class="rounded-xl p-8 flex flex-col items-center">
+            <blockquote class="text-center text-xl/8 font-semibold text-gray-900 sm:text-2xl/9">
+              <p>“{{ comment.message }}”</p>
+            </blockquote>
+            <figcaption class="mt-8 flex flex-col items-center">
+              <img class="mx-auto size-10 rounded-full" src="{{ comment.avatar }}" alt="">
+              <div class="mt-4 flex items-center justify-center space-x-3 text-base">
+                <div class="font-semibold text-gray-900">{{ comment.name }}</div>
+                <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" class="fill-gray-900">
+                  <circle cx="1" cy="1" r="1" />
+                </svg>
+                <div class="text-gray-600">{{ comment.role }}</div>
+              </div>
+            </figcaption>
+          </figure>
+          @endeach
+        </div>
       </div>
     </section>
 
     {{-- section FAQ --}}
 
-  <section class="bg-white py-20 border-t border-gray-200">
+  <section class="py-20">
     <div class="max-w-4xl mx-auto px-6 lg:px-8">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">Frequently Asked Questions</h2>
@@ -236,40 +237,9 @@
       </div>
     </div>
   </section>
-
+</div>
   <!-- Script untuk Accordion -->
   <script>
-    function testimonialsData() {
-      return {
-        comments: [
-          {
-            message: 'Layanan yang luar biasa! Sangat membantu saya dalam perjalanan sebagai orang tua.',
-            avatar: 'https://i.pravatar.cc/100?img=1',
-            name: 'Diana Putri',
-            role: 'Ibu Rumah Tangga',
-          },
-          {
-            message: 'Forum ini sangat informatif. Saya mendapatkan banyak wawasan baru tentang parenting.',
-            avatar: 'https://i.pravatar.cc/100?img=2',
-            name: 'Randy Saputra',
-            role: 'Ayah Muda',
-          },
-          {
-            message: 'Mudah sekali berinteraksi dengan sesama orang tua, dan banyak tips yang sangat bermanfaat.',
-            avatar: 'https://i.pravatar.cc/100?img=3',
-            name: 'Hani Fadilah',
-            role: 'Ibu Kerja',
-          },
-          {
-            message: 'Saya merasa lebih percaya diri sebagai orang tua setelah mengikuti diskusi di forum ini.',
-            avatar: 'https://i.pravatar.cc/100?img=4',
-            name: 'Budi Santoso',
-            role: 'Ayah dan Profesional',
-          },
-        ]
-      }
-    }
-
     const faqs = document.querySelectorAll("button");
 
     faqs.forEach(faq => {

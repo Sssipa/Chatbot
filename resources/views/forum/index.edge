@@ -1,0 +1,144 @@
+@component('layouts/app', { title: "Forum Parenting" })
+    @slot('meta')
+    <meta name="description" content="Diskusikan pengalaman dan tips parenting dengan komunitas.">
+    @endslot
+
+    @slot('main')
+        <section class="py-12">
+            <div class="max-w-7xl mx-auto px-6" x-data="forumPagination()" x-init="fetchData()">
+
+                <!-- Beranda Forum -->
+                <div class="mb-10 text-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Forum Sharing Parenting</h1>
+                    <p class="mt-2 text-gray-600">Berbagi pengalaman dari sesama orang tua.</p>
+                </div>
+
+                <div class="flex justify-between items-center mb-6">
+                <a href="{{ route('forum.create') }}" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-full text-sm font-semibold transition">
+                    + Bagikan Pengalaman
+                </a>
+                </div>
+
+                <!-- Search -->
+                <input x-model="searchQuery" type="text" placeholder="Cari diskusi..." class="w-full p-3 border rounded-xl mb-6" />
+
+                <!-- List Thread Diskusi -->
+                <div class="space-y-6">
+                <!-- List Thread Diskusi -->
+                <div class="space-y-6">
+                    <template x-for="post in paginatedData()" :key="post.id">
+                        <a :href="`/forum/${post.id}`" class="block p-4 bg-white rounded-lg shadow hover:shadow-lg transition">
+                            <div class="flex justify-between items-center mb-2">
+                                <h2 class="text-lg font-semibold text-gray-800" x-text="post.title"></h2>
+                            </div>
+                            <p class="text-gray-600 text-sm" x-text="post.content.substring(0, 100) + (post.content.length > 100 ? '...' : '')"></p>
+                            <div class="mt-4 text-xs text-gray-400 flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <span>👤</span> <span x-text="post.user?.fullName ?? 'Anonim'"></span>
+                                </div>
+                                <div>🗓️ <span x-text="formatTanggal(post.createdAt)"></span></div>
+                                <div>💬 <span x-text="post.forum_komentar.length"></span> Komentar</div>
+                            </div>
+                        </a>
+                    </template>
+                    <template x-if="paginatedData().length === 0 && !loading">
+                        <div class="text-center text-gray-500 py-10">Belum ada diskusi ditemukan.</div>
+                    </template>
+                </div>
+                <div class="flex justify-center items-center gap-4 mt-10" x-show="!loading && filteredForum.length > 0">
+                    <button
+                        @click="prevPage"
+                        x-show="currentPage > 1"
+                        class="px-4 py-2 bg-amber-400 text-gray-600 font-semibold rounded-lg hover:bg-amber-500 transition"
+                    >
+                        Previous
+                    </button>
+                    <span class="text-gray-600" x-text="'Halaman ' + currentPage"></span>
+                    <button
+                        @click="nextPage"
+                        x-show="currentPage < totalPages"
+                        class="px-4 py-2 bg-amber-400 text-gray-600 font-semibold rounded-lg hover:bg-amber-500 transition"
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+        </section>
+        <script>
+            function forumPagination() {
+                return {
+                    searchQuery: '',
+                    currentPage: 1,
+                    perPage: 6,
+                    forum: [],
+                    loading: true,
+
+                    async fetchData() {
+                        this.loading = true
+                        try {
+                            const res = await fetch('/api/forum')
+                            let data = await res.json()
+                            if (data.data) data = data.data
+                            this.forum = data.map(post => ({
+                                ...post,
+                                createdAt: post.createdAt || post.created_at,
+                                user: post.user,
+                                forum_komentar: post.forum_komentar || []
+                            }))
+                        } catch (e) {
+                            this.forum = []
+                        }
+                        this.loading = false
+                    },
+
+                    get filteredForum() {
+                        if (!this.searchQuery.trim()) return this.forum
+                        const keyword = this.searchQuery.toLowerCase()
+                        return this.forum.filter(post =>
+                            post.title.toLowerCase().includes(keyword) ||
+                            (post.user?.fullName?.toLowerCase() ?? '').includes(keyword) ||
+                            post.content.toLowerCase().includes(keyword)
+                        )
+                    },
+
+                    paginatedData() {
+                        const start = (this.currentPage - 1) * this.perPage
+                        return this.filteredForum.slice(start, start + this.perPage)
+                    },
+
+                    get totalPages() {
+                        return Math.ceil(this.filteredForum.length / this.perPage) || 1
+                    },
+
+                    nextPage() {
+                        if (this.currentPage < this.totalPages) {
+                            this.currentPage++
+                        }
+                    },
+
+                    prevPage() {
+                        if (this.currentPage > 1) {
+                            this.currentPage--
+                        }
+                    },
+
+                    startItem() {
+                        return this.filteredForum.length === 0 ? 0 : (this.currentPage - 1) * this.perPage + 1
+                    },
+
+                    endItem() {
+                        return Math.min(this.currentPage * this.perPage, this.filteredForum.length)
+                    },
+
+                    formatTanggal(tanggal) {
+                        if (!tanggal) return '-'
+                        const date = new Date(tanggal)
+                        if (isNaN(date)) return tanggal
+                        const options = { year: 'numeric', month: 'long', day: 'numeric' }
+                        return date.toLocaleDateString('id-ID', options)
+                    }
+                }
+            }  
+            </script>
+    @endslot
+@endcomponent

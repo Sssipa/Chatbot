@@ -1,0 +1,134 @@
+@component('layouts/app', { title: "Mitos vs Fakta Parenting" })
+@slot('meta')
+    <meta name="description" content="Bedakan mitos dan fakta seputar parenting dengan mudah melalui penjelasan yang akurat.">
+@endslot
+
+@slot('main')
+<section x-data="mitosFakta()" x-init="fetchData()" class="py-16">
+  <div class="max-w-5xl mx-auto px-6">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Mitos vs Fakta Seputar Parenting</h2>
+
+    <div class="mb-8">
+      <input
+        type="text"
+        placeholder="Cari mitos atau fakta..."
+        class="w-full p-4 border-2 border-amber-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-300 shadow-sm"
+        x-model="search"
+      >
+    </div>
+
+    <template x-if="loading">
+      <div class="text-center text-gray-500 py-10">Memuat data...</div>
+    </template>
+    <template x-if="!loading && filteredItems.length === 0">
+      <div class="text-center text-gray-500 py-10">Tidak ada data ditemukan.</div>
+    </template>
+
+    <div class="grid gap-6" x-show="!loading && filteredItems.length > 0">
+      <template x-for="(item, idx) in paginatedItems()" :key="idx">
+        <div class="border border-gray-200 rounded-xl shadow-md overflow-hidden bg-white" x-data="{ open: false }">
+          <button
+            @click="open = !open"
+            class="w-full flex justify-between items-center p-4 hover:bg-gray-100 transition"
+          >
+            <div class="flex items-center gap-2">
+              <span class="text-red-500 text-2xl">🚫</span>
+              <div class="text-left">
+                <span class="text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded">Mitos:</span>
+                <span class="font-semibold text-gray-700 ml-2" x-text="item.mitos"></span>
+              </div>
+            </div>
+            <svg :class="{'rotate-180': open}" class="h-5 w-5 transform transition-transform duration-300 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <div x-show="open" x-collapse class="p-4 bg-white border-t border-gray-200">
+            <div class="flex items-start gap-2">
+              <span class="text-green-500 text-2xl">✅</span>
+              <div>
+                <span class="text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded">Fakta:</span>
+                <span class="font-semibold text-gray-700 ml-2" x-text="item.fakta"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-4 mt-10" x-show="!loading && filteredItems.length > 0">
+      <button
+        @click="prevPage"
+        x-show="currentPage > 1"
+        class="px-4 py-2 bg-amber-400 text-gray-600 font-semibold rounded-lg hover:bg-amber-500 transition"
+      >
+        Previous
+      </button>
+      <span class="text-gray-600" x-text="'Halaman ' + currentPage"></span>
+      <button
+        @click="nextPage"
+        x-show="currentPage < totalPages"
+        class="px-4 py-2 bg-amber-400 text-gray-600 font-semibold rounded-lg hover:bg-amber-500 transition"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+function mitosFakta() {
+  return {
+    search: '',
+    currentPage: 1,
+    perPage: 5,
+    semuaItem: [],
+    loading: true,
+
+    async fetchData() {
+      this.loading = true
+      try {
+        const res = await fetch('/api/mitos-fakta')
+        this.semuaItem = await res.json()
+      } catch (e) {
+        this.semuaItem = []
+      }
+      this.loading = false
+    },
+
+    get filteredItems() {
+      if (this.search.trim() === '') {
+        return this.semuaItem
+      }
+      const keyword = this.search.toLowerCase()
+      return this.semuaItem.filter(item =>
+        item.mitos.toLowerCase().includes(keyword) || item.fakta.toLowerCase().includes(keyword)
+      )
+    },
+
+    get totalPages() {
+      return Math.ceil(this.filteredItems.length / this.perPage) || 1
+    },
+
+    paginatedItems() {
+      const start = (this.currentPage - 1) * this.perPage
+      return this.filteredItems.slice(start, start + this.perPage)
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
+      }
+    },
+
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+    }
+  }
+}
+</script>
+@endslot
+@endcomponent

@@ -4,7 +4,7 @@
     @endslot
 
     @slot('main')
-        <section class="py-24 bg-[url('/images/bg-tentang.png')] bg-cover bg-center bg-no-repeat">
+        <section class="py-24 bg-gradient-to-r from-indigo-600 to-purple-600">
             <div class="max-w-5xl mx-auto px-6 text-center">
                 <h1 class="text-5xl font-bold text-white mb-6 animate-fade-in-up">Kenalan dengan TinyBoss</h1>
                 <p class="text-lg text-white leading-relaxed animate-fade-in-up delay-100">
@@ -16,7 +16,7 @@
         </section>
 
         {{-- Tim Kami --}}
-        <section class="py-24 bg-gradient-to-b from-white to-gray-100">
+        <section class="py-24 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl animate-fade-in-up">Tim Kami</h2>
@@ -63,11 +63,15 @@
                             github: 'https://github.com/auliaahf'
                         }
                     ])
-                    <div class="w-54 bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all group relative hover:-translate-y-3 animate-fade-in-up">
-                        <img src="{{ member.image }}" alt="{{ member.name }}" class="w-full h-80 object-cover" />
+                    <div class="w-54 bg-white rounded-2xl overflow-hidden shadow-xl transition-transform duration-300 hover:scale-105 group relative hover:-translate-y-3 animate-fade-in-up group-hover:z-10 group-hover:ring-2 group-hover:ring-indigo-200">
+                        <img src="{{ member.image }}" alt="{{ member.name }}" class="w-full h-80 object-cover aspect-[5/5]" />
                         <div class="p-4 text-left">
-                            <h3 class="text-lg font-bold text-gray-900">{{ member.name }}</h3>
-                            <p class="text-sm text-gray-500">{{ member.nim }}</p>
+                            <h3 class="text-lg font-bold text-gray-900 transition-transform duration-300 group-hover:scale-110 origin-left">
+                                {{ member.name }}
+                            </h3>
+                            <p class="text-sm text-gray-500 transition-transform duration-300 group-hover:scale-110 origin-left">
+                                {{ member.nim }}
+                            </p>
                         </div>
                         <div class="absolute bottom-4 right-4 flex space-x-2">
                             @if (member.instagram != '#')
